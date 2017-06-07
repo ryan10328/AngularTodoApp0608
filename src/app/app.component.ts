@@ -66,14 +66,37 @@ export class AppComponent {
   }
 
   checkAll() {
-    this.todos = this.todos.map((x) => {
+
+    let todos = this.todos.map((x) => {
       return x.done !== this.isToggle ?
-        { todo: x.todo, done: !x.done } :
-        { todo: x.todo, done: x.done };
+        { id: x.id, todo: x.todo, done: !x.done } :
+        { id: x.id, todo: x.todo, done: x.done };
     });
+
+    let checkAllObservables: any[] = [];
+    todos.forEach(item => {
+      let putObs = this.http.put(`http://localhost:3000/todos/${item.id}`, {
+        todo: item.todo,
+        done: item.done
+      });
+      checkAllObservables.push(putObs);
+    });
+
+    Observable.forkJoin(checkAllObservables)
+      .concatMap(x => this.getTodos()) // 再接 getTodos() 把最後的資料拿回來
+      .subscribe(x => this.todos = x);
   }
 
   deleteTodo(item) {
-    this.todos = this.todos.filter(x => x !== item);
+    // this.todos = this.todos.filter(x => x !== item);
+    this.http.delete(`http://localhost:3000/todos/${item.id}`)
+      .concatMap(x => this.getTodos())
+      .subscribe(x => this.todos = x);
+  }
+
+  checkDone(item) {
+    this.http.put(`http://localhost:3000/todos/${item.id}`, { todo: item.todo, done: item.done })
+      .concatMap(x => this.getTodos())
+      .subscribe(x => this.todos = x);
   }
 }
