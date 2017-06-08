@@ -14,7 +14,7 @@ export class AppComponent {
   constructor(private http: Http,
     private dataService: DataService) {
 
-    this.getTodos().subscribe(x => this.todos = x);
+    this.dataService.getTodos().subscribe(x => this.todos = x);
 
   }
 
