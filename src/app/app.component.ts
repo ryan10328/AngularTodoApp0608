@@ -17,7 +17,7 @@ export class AppComponent {
     this.dataService.getTodos().subscribe(x => this.todos = x);
 
   }
-
+  colSpan: number = 2;
   isToggle: boolean = false;
   selectedType: string = 'all';
   todo: string = '';
